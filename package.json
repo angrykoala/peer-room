@@ -1,0 +1,51 @@
+{
+  "name": "socket-stream",
+  "version": "0.1.0",
+  "description": "WebRTC + Sockets for a lovely P2P",
+  "main": "dist/main.js",
+  "scripts": {
+    "tsc": "rm -rf dist && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test-frontend": "parcel test/*.html -p 2222 -d test/dist",
+    "test-server": "ts-node test/server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angrykoala/socket-stream.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "types": "dist/main.d.ts",
+  "keywords": [
+    "webrtc",
+    "socket",
+    "p2p",
+    "stream"
+  ],
+  "browserslist": [
+    "last 1 Chrome version"
+  ],
+  "author": "angrykoala <angrykoala@outlook.es>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/angrykoala/socket-stream/issues"
+  },
+  "homepage": "https://github.com/angrykoala/socket-stream#readme",
+  "dependencies": {
+    "simple-peer": "^9.7.2",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.6",
+    "@types/node": "^14.0.14",
+    "@types/simple-peer": "^9.6.0",
+    "@types/socket.io": "^2.1.8",
+    "@types/socket.io-client": "^1.4.33",
+    "express": "^4.17.1",
+    "parcel": "^1.12.4",
+    "ts-node": "^8.10.2",
+    "tslint": "^6.1.2",
+    "typescript": "^3.9.5"
+  }
+}
