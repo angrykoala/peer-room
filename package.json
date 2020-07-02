@@ -6,6 +6,7 @@
   "scripts": {
     "tsc": "rm -rf dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "tslint": "tslint *.ts src/*.ts src/*/*.ts src/*/*/*.ts --fix",
     "examples-frontend": "parcel watch examples/*.html -d examples/dist",
     "examples-server": "ts-node examples/server.ts",
     "examples": "concurrently --kill-others \"npm run examples-frontend\" \"npm run examples-server\""

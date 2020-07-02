@@ -1,6 +1,12 @@
 import SimplePeer from 'simple-peer';
 import { EventEmitter } from 'events';
 
+export enum ClientPeerEvents {
+    disconnect = 'disconnect',
+    connect = 'connect',
+    stream = 'stream',
+}
+
 export class ClientPeer extends EventEmitter {
     public readonly id: string;
     private socket: SocketIOClient.Socket;
@@ -16,15 +22,15 @@ export class ClientPeer extends EventEmitter {
     }
 
     public get connected(): boolean {
-        return this.connected
+        return this.peerConnected;
     }
 
     public signal(signal: string | SimplePeer.SignalData): void {
-        this.peer.signal(signal)
+        this.peer.signal(signal);
     }
 
-    public sendData(data: string) {
-        this.peer.send(data)
+    public sendData(data: string): void {
+        this.peer.send(data);
     }
 
     public stream(stream: MediaStream): void {
@@ -32,41 +38,40 @@ export class ClientPeer extends EventEmitter {
     }
 
     public disconnect(): void {
-        this.peer.destroy()
+        this.peer.destroy();
     }
 
     private setupPeer(options: SimplePeer.Options): SimplePeer.Instance {
         const peer = new SimplePeer(options);
         peer.on('signal', signal => {
-            console.log("Peer signal")
             this.socket.emit('signal', {
                 signal: signal,
                 target: this.id
-            })
+            });
         });
 
         peer.on('close', () => {
-            console.log("Peer close")
+            console.log("Peer close");
             this.peerConnected = false;
-            this.emit('disconnect')
-        })
+            this.emit(ClientPeerEvents.disconnect);
+        });
         peer.on('connect', () => {
-            console.log("Peer connect")
+            console.log("Peer connect");
             this.peerConnected = true;
-            this.emit('connected')
-        })
+            this.emit(ClientPeerEvents.connect);
+        });
         peer.on('data', (data) => {
-            console.log("Peer data", data)
-        })
+            console.log("Peer data", data);
+        });
         peer.on('stream', (stream) => {
-            console.log("Peer stream")
-            this.emit('stream', stream)
-        })
+            console.log("Peer stream");
+            this.emit(ClientPeerEvents.stream, stream);
+        });
         peer.on('error', (error: Error) => {
-            console.log("Peer error", error)
+            console.log("Peer error", error);
             this.peerConnected = false;
-            this.emit('disconnect')
-        })
-        return peer
+            this.emit(ClientPeerEvents.disconnect);
+        });
+        return peer;
     }
 }

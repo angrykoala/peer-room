@@ -3,30 +3,29 @@ import { EventEmitter } from 'events';
 import SocketIO, { Socket } from 'socket.io';
 import { Peer } from './peer';
 
-
 type SignalEvent = {
     target: string
     signal: any
-}
+};
 
 export class SocketStreamRoom extends EventEmitter {
     private peers: Map<string, Peer> = new Map();
     private io: SocketIO.Server;
 
     constructor(httpServer: http.Server) {
-        super()
+        super();
         this.io = SocketIO(httpServer);
         this.io.origins('*:*');
 
         this.setupSocketConnections();
     }
 
-    public registerPeer(peer: Peer) {
+    public registerPeer(peer: Peer): void {
         this.notify('add-peer', peer.serialize());
         this.peers.set(peer.id, peer);
     }
 
-    private setupSocketConnections() {
+    private setupSocketConnections(): void {
         this.io.on('connection', (socket: Socket) => {
             const peer = new Peer(socket);
             this.emit('connection', peer);
@@ -34,10 +33,10 @@ export class SocketStreamRoom extends EventEmitter {
             socket.on('disconnect', () => {
                 console.log("Disconnect");
                 this.emit('disconnect', peer);
-            })
+            });
 
             socket.on('signal', ({ target, signal }: SignalEvent) => {
-                console.log("Signal")
+                console.log("Signal");
                 // TODO: validate signal
                 const targetPeer = this.peers.get(target);
                 if (targetPeer) targetPeer.emit('signal', {
@@ -48,7 +47,7 @@ export class SocketStreamRoom extends EventEmitter {
         });
     }
 
-    private notify(event: string, data?: any) {
+    private notify(event: string, data?: any): void {
         for (const [_id, peer] of this.peers) {
             peer.emit(event, data);
         }
