@@ -6,8 +6,9 @@
   "scripts": {
     "tsc": "rm -rf dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test-frontend": "parcel test/*.html -p 2222 -d test/dist",
-    "test-server": "ts-node test/server.ts"
+    "examples-frontend": "parcel watch examples/*.html -d examples/dist",
+    "examples-server": "ts-node examples/server.ts",
+    "examples": "concurrently --kill-others \"npm run examples-frontend\" \"npm run examples-server\""
   },
   "repository": {
     "type": "git",

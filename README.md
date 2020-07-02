@@ -2,6 +2,9 @@
 WebRTC + Sockets for a lovely P2P
 
 
+* `npm run examples` to run examples in localhost:1222
+
+
 # Define topology of an use case
 * **Rooms**
   * Every peer belongs to a room
