@@ -1,8 +1,8 @@
 import express from 'express';
 import { Server } from 'http';
-import { SocketStreamRoom } from '../main';
 import path from 'path';
-import { Peer } from '../src/peer';
+import { SocketStreamRoom } from '../src/server/server';
+import { Peer } from '../src/server/peer';
 
 const app = express();
 const server = new Server(app)

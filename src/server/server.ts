@@ -1,7 +1,7 @@
 import http from 'http';
 import { EventEmitter } from 'events';
 import SocketIO, { Socket } from 'socket.io';
-import { Peer } from './src/peer';
+import { Peer } from './peer';
 
 
 type SignalEvent = {

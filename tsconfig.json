@@ -19,8 +19,8 @@
     },
     "compileOnSave": true,
     "includes": [
-        "main.ts",
-        "cli.ts",
+        "src/server/server.ts",
+        "src/cli/cli.ts",
         "globals.d.ts"
     ]
 }

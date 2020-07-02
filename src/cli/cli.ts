@@ -1,5 +1,5 @@
 import * as io from "socket.io-client";
-import { ClientPeer } from "./src/cli/client_peer";
+import { ClientPeer } from "./client_peer";
 import SimplePeer from "simple-peer";
 import { EventEmitter } from 'events';
 

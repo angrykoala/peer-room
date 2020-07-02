@@ -1,5 +1,6 @@
-import { SocketStremClient } from '../cli';
-import { ClientPeer } from '../src/cli/client_peer';
+import { ClientPeer } from "../src/cli/client_peer";
+import { SocketStremClient } from "../src/cli/cli";
+
 
 async function main() {
     const videoList = document.querySelector('#videos')!
