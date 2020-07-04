@@ -5,14 +5,14 @@ import { SocketStreamRoom } from '../src/server/server';
 import { Peer } from '../src/server/peer';
 
 const app = express();
-const server = new Server(app)
+const server = new Server(app);
 
 const streamRoom = new SocketStreamRoom(server);
 
 streamRoom.on('connection', (peer: Peer) => {
-    console.log("Peer connected", peer.id)
-    streamRoom.registerPeer(peer)
-})
+    console.log("Peer connected", peer.id);
+    streamRoom.registerPeer(peer);
+});
 
 app.use(express.static(path.join(__dirname, 'dist')));
 

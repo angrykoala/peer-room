@@ -1,8 +1,7 @@
 import { ClientPeer } from "../src/cli/client_peer";
 import { SocketStremClient } from "../src/cli/cli";
 
-
-async function main() {
+async function main(): Promise<void> {
     const videoConstrains = [800, 600];
     // const videoComponent = document.querySelector('video')!;
 
@@ -18,14 +17,13 @@ async function main() {
 
     const socketStreamClient = new SocketStremClient({
         location: document.location.host,
-    })
-
+    });
 
     await socketStreamClient.connect();
     socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
-        console.log("PEER CONNECTED")
+        console.log("PEER CONNECTED");
         peer.stream(stream);
-    })
+    });
 }
 
 main();

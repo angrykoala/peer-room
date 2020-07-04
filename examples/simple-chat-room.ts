@@ -1,10 +1,16 @@
 import { ClientPeer } from "../src/cli/client_peer";
 import { SocketStremClient } from "../src/cli/cli";
 
-async function main() {
-    const videoList = document.querySelector('#videos')!
+const connectButton = document.querySelector('#connectButton') as HTMLButtonElement;
+
+connectButton.addEventListener("click", () => {
+    connectButton.disabled = true;
+    connect();
+});
+
+async function connect(): Promise<void> {
+    const videoList = document.querySelector('#videos')!;
     const videoConstrains = [800, 600];
-    // const videoComponent = document.querySelector('video')!;
 
     const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -12,37 +18,30 @@ async function main() {
             height: { max: videoConstrains[1] },
             facingMode: "user"
         },
-        audio: false
+        audio: true
     });
-    // videoComponent.srcObject = stream;
 
     const socketStreamClient = new SocketStremClient({
         location: document.location.host,
-        // stream: stream
-    })
-
+    });
 
     await socketStreamClient.connect();
     socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
-        console.log("PEEER CONNECTED")
         peer.stream(stream);
         let video: HTMLVideoElement;
-        peer.on('stream', (stream) => {
-            console.log('stream', stream)
-            video = document.createElement('video')
-            video.srcObject = stream
+
+        peer.on('stream', (peerStream) => {
+            console.log('stream', peerStream);
+            video = document.createElement('video');
+            video.srcObject = peerStream;
             videoList.appendChild(video);
-            video.play()
-        })
+            video.play();
+        });
 
         peer.on('disconnect', () => {
-            console.log("Disconnect peer")
             if (video) {
-                video.remove()
+                video.remove();
             }
-        })
-
-    })
+        });
+    });
 }
-
-main();

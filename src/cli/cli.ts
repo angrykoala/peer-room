@@ -1,5 +1,5 @@
 import * as io from "socket.io-client";
-import { ClientPeer } from "./client_peer";
+import { ClientPeer, ClientPeerEvents } from "./client_peer";
 import SimplePeer from "simple-peer";
 import { EventEmitter } from 'events';
 
@@ -56,7 +56,8 @@ export class SocketStremClient extends EventEmitter {
         });
         this.peers.set(peer.id, peer);
 
-        peer.on('connected', () => {
+        peer.on(ClientPeerEvents.connect, () => {
+            console.log("Before emit peer connected");
             this.emit('peer-connected', peer);
         });
 
