@@ -7,6 +7,8 @@ WebRTC + Sockets for a lovely P2P
 * `npm run examples` to run examples in localhost:1222
 
 
+
+> Warning: The following is a first design on how this is **intended** to work, not how this works currently
 # Define topology of an use case
 * **Rooms**
   * Every peer belongs to a room
@@ -63,13 +65,6 @@ connection.on('peer',(peer)=>{
 ```
 
 _client.js_
-
-## Peer
-
-* Id -> ¿SocketId?
-* Roles
-* Data
-* Status
 
 
 ## SocketStore
