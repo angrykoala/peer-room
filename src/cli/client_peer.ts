@@ -51,15 +51,14 @@ export class ClientPeer extends EventEmitter {
         });
 
         peer.on('close', () => {
-            console.log("Peer close");
             this.peerConnected = false;
             this.emit(ClientPeerEvents.disconnect);
         });
         peer.on('connect', () => {
-            console.log("Peer connect");
             this.peerConnected = true;
             this.emit(ClientPeerEvents.connect);
         });
+
         peer.on('data', (data) => {
             console.log("Peer data", data);
         });
@@ -68,7 +67,7 @@ export class ClientPeer extends EventEmitter {
             this.emit(ClientPeerEvents.stream, stream);
         });
         peer.on('error', (error: Error) => {
-            console.log("Peer error", error);
+            console.warn("Peer error", error);
             this.peerConnected = false;
             this.emit(ClientPeerEvents.disconnect);
         });

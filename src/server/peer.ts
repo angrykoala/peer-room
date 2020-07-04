@@ -7,7 +7,6 @@ export type SerializedPeer = {
 export class Peer {
     private socket: Socket;
 
-
     constructor(socket: Socket) {
         this.socket = socket;
     }

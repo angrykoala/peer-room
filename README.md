@@ -1,6 +1,8 @@
 # socket-stream
 WebRTC + Sockets for a lovely P2P
 
+> Warning: under heavy development, this will go kaboom 💥
+
 
 * `npm run examples` to run examples in localhost:1222
 

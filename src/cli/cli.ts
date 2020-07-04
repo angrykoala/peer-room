@@ -57,7 +57,6 @@ export class SocketStremClient extends EventEmitter {
         this.peers.set(peer.id, peer);
 
         peer.on(ClientPeerEvents.connect, () => {
-            console.log("Before emit peer connected");
             this.emit('peer-connected', peer);
         });
 
