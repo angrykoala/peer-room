@@ -15,6 +15,10 @@ export class Peer {
         return this.socket.id;
     }
 
+    public disconnect(): void {
+        this.socket.disconnect(true);
+    }
+
     public emit(event: string, data?: any): void {
         this.socket.emit(event, data);
     }

@@ -44,6 +44,7 @@ export class ClientPeer extends EventEmitter {
     private setupPeer(options: SimplePeer.Options): SimplePeer.Instance {
         const peer = new SimplePeer(options);
         peer.on('signal', signal => {
+            console.log("[Webrtc] Signal");
             this.socket.emit('signal', {
                 signal: signal,
                 target: this.id
@@ -51,23 +52,25 @@ export class ClientPeer extends EventEmitter {
         });
 
         peer.on('close', () => {
+            console.log("[Webrtc] Close");
             this.peerConnected = false;
             this.emit(ClientPeerEvents.disconnect);
         });
         peer.on('connect', () => {
+            console.log("[Webrtc] Connect");
             this.peerConnected = true;
             this.emit(ClientPeerEvents.connect);
         });
 
         peer.on('data', (data) => {
-            console.log("Peer data", data);
+            console.log("[Webrtc] Data", data);
         });
         peer.on('stream', (stream) => {
-            console.log("Peer stream");
+            console.log("[Webrtc] Stream");
             this.emit(ClientPeerEvents.stream, stream);
         });
         peer.on('error', (error: Error) => {
-            console.warn("Peer error", error);
+            console.warn("[Webrtc]  error", error);
             this.peerConnected = false;
             this.emit(ClientPeerEvents.disconnect);
         });

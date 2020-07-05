@@ -17,16 +17,20 @@ export class SocketStremClient extends EventEmitter {
         const socket = io.connect(this.options.location);
         socket.on('connect', () => {
             this.socket = socket;
-            console.log("Connected");
+            console.log("[Socket] Connected");
+        });
+
+        socket.on('disconnect', () => {
+            console.log("[Socket] Disconnected");
         });
 
         socket.on('add-peer', (peerData: { id: string }) => {
-            console.log("Add peer", peerData);
+            console.log("[Socket] Add peer", peerData);
             this.setupPeer(peerData.id, true);
         });
 
         socket.on('peer-disconnected', (peerData: { id: string }) => {
-            console.log("Peer Disconnected");
+            console.log("[Socket] Peer Disconnected");
             this.disconnectPeer(peerData.id);
         });
 
@@ -37,7 +41,7 @@ export class SocketStremClient extends EventEmitter {
             }
 
             peer.signal(signal);
-            console.log("Signal", signal);
+            console.log("[Socket] Signal", signal);
         });
     }
 

@@ -18,7 +18,7 @@ async function connect(): Promise<void> {
             height: { max: videoConstrains[1] },
             facingMode: "user"
         },
-        audio: true
+        audio: false
     });
 
     const socketStreamClient = new SocketStremClient({
@@ -31,7 +31,6 @@ async function connect(): Promise<void> {
         let video: HTMLVideoElement;
 
         peer.on('stream', (peerStream) => {
-            console.log('stream', peerStream);
             video = document.createElement('video');
             video.srcObject = peerStream;
             videoList.appendChild(video);
@@ -39,6 +38,7 @@ async function connect(): Promise<void> {
         });
 
         peer.on('disconnect', () => {
+            console.log("PEER DISCONNECT");
             if (video) {
                 video.remove();
             }

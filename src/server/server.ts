@@ -17,7 +17,7 @@ export class SocketStreamRoom extends EventEmitter {
         this.io = SocketIO(httpServer);
         this.io.origins('*:*');
 
-        this.setupSocketConnections();
+        this.setupSockets();
     }
 
     public registerPeer(peer: Peer): void {
@@ -25,24 +25,34 @@ export class SocketStreamRoom extends EventEmitter {
         this.peers.set(peer.id, peer);
     }
 
-    private setupSocketConnections(): void {
+    public isPeerRegistered(peer: Peer): boolean {
+        return this.peers.has(peer.id);
+    }
+
+    private setupSockets(): void {
         this.io.on('connection', (socket: Socket) => {
             const peer = new Peer(socket);
             this.emit('connection', peer);
 
             socket.on('disconnect', () => {
-                console.log("Disconnect");
-                this.emit('disconnect', peer);
+                if (this.isPeerRegistered(peer)) {
+                    console.log("Disconnect");
+                    this.emit('disconnect', peer);
+                    this.peers.delete(peer.id);
+                    this.notify('peer-disconnected', peer.serialize());
+                }
             });
 
             socket.on('signal', ({ target, signal }: SignalEvent) => {
                 console.log("Signal");
-                // TODO: validate signal
-                const targetPeer = this.peers.get(target);
-                if (targetPeer) targetPeer.emit('signal', {
-                    source: socket.id,
-                    signal
-                });
+                if (this.isPeerRegistered(peer)) {
+                    // TODO: validate signal
+                    const targetPeer = this.peers.get(target);
+                    if (targetPeer) targetPeer.emit('signal', {
+                        source: socket.id,
+                        signal
+                    });
+                }
             });
         });
     }
