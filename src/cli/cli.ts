@@ -36,7 +36,7 @@ export class SocketStremClient extends EventEmitter {
 
         socket.on('signal', ({ source, signal }: { source: string, signal: string | SimplePeer.SignalData }) => {
             let peer = this.peers.get(source);
-            if (!peer) {
+            if (!peer) { // TODO: validate this is the first signal, and not a leftover from deleted peers
                 peer = this.setupPeer(source, false);
             }
 

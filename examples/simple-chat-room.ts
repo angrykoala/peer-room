@@ -44,7 +44,6 @@ async function connect(): Promise<void> {
             video = document.createElement('video');
             video.srcObject = peerStream;
             videoList.appendChild(video);
-            console.log("Play video", peerStream);
             video.play();
         });
 

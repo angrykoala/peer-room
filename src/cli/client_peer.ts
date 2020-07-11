@@ -17,7 +17,7 @@ export class ClientPeer extends EventEmitter {
     constructor(id: string, socket: SocketIOClient.Socket, options: SimplePeer.Options) {
         super();
         this.id = id;
-        this.peer = this.setupPeer({ trickle: false, ...options });
+        this.peer = this.setupPeer({ trickle: true, ...options });
         this.socket = socket;
     }
 
@@ -29,11 +29,13 @@ export class ClientPeer extends EventEmitter {
         this.peer.signal(signal);
     }
 
-    public sendData(data: string): void { // this can only be done after the peer is fully connected
+    public sendData(data: string): void {
+        if (!this.connected) throw new Error("Cannot sendData before peer connected");
         this.peer.send(data);
     }
 
     public stream(stream: MediaStream): void {
+        if (!this.connected) throw new Error("Cannot stream before peer connected");
         this.peer.addStream(stream);
     }
 
@@ -64,9 +66,11 @@ export class ClientPeer extends EventEmitter {
         });
 
         peer.on('data', (data) => {
+            if (!this.connected) console.warn("Webrtc event data before connect");
             console.log("[Webrtc] Data", data.toString());
         });
         peer.on('stream', (stream) => {
+            if (!this.connected) console.warn("Webrtc event stream before connect");
             console.log("[Webrtc] Stream");
             this.emit(ClientPeerEvents.stream, stream);
         });

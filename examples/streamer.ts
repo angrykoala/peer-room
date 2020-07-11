@@ -21,7 +21,6 @@ async function main(): Promise<void> {
 
     await socketStreamClient.connect();
     socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
-        console.log("PEER CONNECTED");
         peer.stream(stream);
     });
 }
