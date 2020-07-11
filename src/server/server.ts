@@ -21,6 +21,7 @@ export class SocketStreamRoom extends EventEmitter {
     }
 
     public registerPeer(peer: Peer): void {
+        console.log("Register Peer", peer.id);
         this.notify('add-peer', peer.serialize());
         this.peers.set(peer.id, peer);
     }
@@ -36,7 +37,7 @@ export class SocketStreamRoom extends EventEmitter {
 
             socket.on('disconnect', () => {
                 if (this.isPeerRegistered(peer)) {
-                    console.log("Disconnect");
+                    console.log("Disconnect", socket.id);
                     this.emit('disconnect', peer);
                     this.peers.delete(peer.id);
                     this.notify('peer-disconnected', peer.serialize());
@@ -44,7 +45,7 @@ export class SocketStreamRoom extends EventEmitter {
             });
 
             socket.on('signal', ({ target, signal }: SignalEvent) => {
-                console.log("Signal");
+                console.log(`Signal from ${socket.id} to ${target}`);
                 if (this.isPeerRegistered(peer)) {
                     // TODO: validate signal
                     const targetPeer = this.peers.get(target);

@@ -1,14 +1,21 @@
 import { ClientPeer } from "../src/cli/client_peer";
 import { SocketStremClient } from "../src/cli/cli";
 
-async function main(): Promise<void> {
+const connectButton = document.querySelector('#connectButton') as HTMLButtonElement;
+
+connectButton.addEventListener("click", () => {
+    connectButton.disabled = true;
+    connect();
+});
+
+async function connect(): Promise<void> {
     const videoList = document.querySelector('#videos')!;
 
     const socketStreamClient = new SocketStremClient({
         location: document.location.host,
     });
 
-    await socketStreamClient.connect();
+    socketStreamClient.connect();
     socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
         console.log("PEEER CONNECTED");
         let video: HTMLVideoElement;
@@ -29,5 +36,3 @@ async function main(): Promise<void> {
 
     });
 }
-
-main();

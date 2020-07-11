@@ -10,6 +10,7 @@ connectButton.addEventListener("click", () => {
 
 async function connect(): Promise<void> {
     const videoList = document.querySelector('#videos')!;
+    const myVideo = document.querySelector('#my-video') as HTMLVideoElement;
     const videoConstrains = [800, 600];
 
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -21,24 +22,34 @@ async function connect(): Promise<void> {
         audio: false
     });
 
+    (window as any).userStream = stream;
+    // const stream = await (navigator.mediaDevices as any).getDisplayMedia();
+
+    // myVideo.srcObject = stream;
+    // myVideo.play();
+
     const socketStreamClient = new SocketStremClient({
         location: document.location.host,
     });
 
-    await socketStreamClient.connect();
+    socketStreamClient.connect();
     socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
-        peer.stream(stream);
+        console.log("Peer connected");
+        // peer.sendData("This is a test"); // This only works after properly connected
         let video: HTMLVideoElement;
 
+        peer.stream(stream);
         peer.on('stream', (peerStream) => {
+            if (video) console.warn("VIDEO EXISTS!!");
             video = document.createElement('video');
             video.srcObject = peerStream;
             videoList.appendChild(video);
+            console.log("Play video", peerStream);
             video.play();
         });
 
         peer.on('disconnect', () => {
-            console.log("PEER DISCONNECT");
+            console.log("On disconnect");
             if (video) {
                 video.remove();
             }

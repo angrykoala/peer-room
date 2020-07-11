@@ -41,7 +41,7 @@ export class SocketStremClient extends EventEmitter {
             }
 
             peer.signal(signal);
-            console.log("[Socket] Signal", signal);
+            console.log("[Socket] Signal", source, signal);
         });
     }
 
@@ -59,6 +59,9 @@ export class SocketStremClient extends EventEmitter {
             initiator
         });
         this.peers.set(peer.id, peer);
+
+        // TODO: connected is may be received before other events
+        // Try to queue all other events to be sent afterwards
 
         peer.on(ClientPeerEvents.connect, () => {
             this.emit('peer-connected', peer);
