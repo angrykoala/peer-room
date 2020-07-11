@@ -3,7 +3,6 @@ import { SocketStremClient } from "../src/cli/cli";
 
 async function main(): Promise<void> {
     const videoConstrains = [800, 600];
-    // const videoComponent = document.querySelector('video')!;
 
     const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -13,13 +12,14 @@ async function main(): Promise<void> {
         },
         audio: false
     });
-    // videoComponent.srcObject = stream;
 
     const socketStreamClient = new SocketStremClient({
         location: document.location.host,
     });
 
-    await socketStreamClient.connect();
+    await socketStreamClient.connect({
+        role: 'streamer'
+    });
     socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
         peer.stream(stream);
     });

@@ -10,7 +10,6 @@ connectButton.addEventListener("click", () => {
 
 async function connect(): Promise<void> {
     const videoList = document.querySelector('#videos')!;
-    const myVideo = document.querySelector('#my-video') as HTMLVideoElement;
     const videoConstrains = [800, 600];
 
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -23,10 +22,6 @@ async function connect(): Promise<void> {
     });
 
     (window as any).userStream = stream;
-    // const stream = await (navigator.mediaDevices as any).getDisplayMedia();
-
-    // myVideo.srcObject = stream;
-    // myVideo.play();
 
     const socketStreamClient = new SocketStremClient({
         location: document.location.host,
@@ -35,7 +30,7 @@ async function connect(): Promise<void> {
     socketStreamClient.connect();
     socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
         console.log("Peer connected");
-        // peer.sendData("This is a test"); // This only works after properly connected
+        peer.sendData("Hello :3");
         let video: HTMLVideoElement;
 
         peer.stream(stream);

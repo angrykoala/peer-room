@@ -6,6 +6,7 @@ export type SerializedPeer = {
 
 export class Peer {
     private socket: Socket;
+    private rolesSet: Set<string> = new Set();
 
     constructor(socket: Socket) {
         this.socket = socket;
@@ -13,6 +14,20 @@ export class Peer {
 
     public get id(): string {
         return this.socket.id;
+    }
+
+    public get roles(): Array<string> {
+        return Array.from(this.getRoleSet());
+    }
+
+    public addRole(...roles: Array<string>): void {
+        for (const role of roles) {
+            this.rolesSet.add(role);
+        }
+    }
+
+    public hasRole(role: string): boolean {
+        return this.getRoleSet().has(role);
     }
 
     public disconnect(): void {
@@ -27,5 +42,10 @@ export class Peer {
         return {
             id: this.id
         };
+    }
+
+    private getRoleSet(): Set<string> {
+        if (this.rolesSet.size === 0) return new Set(["default"]);
+        else return this.rolesSet;
     }
 }

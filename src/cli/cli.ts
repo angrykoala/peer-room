@@ -13,11 +13,12 @@ export class SocketStremClient extends EventEmitter {
         this.options = options;
     }
 
-    public async connect(): Promise<void> {
+    public async connect(payload?: any): Promise<void> {
         const socket = io.connect(this.options.location);
         socket.on('connect', () => {
             this.socket = socket;
             console.log("[Socket] Connected");
+            this.socket.emit("connect-request", payload);
         });
 
         socket.on('disconnect', () => {

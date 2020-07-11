@@ -10,6 +10,7 @@ type SignalEvent = {
 
 export class SocketStreamRoom extends EventEmitter {
     private peers: Map<string, Peer> = new Map();
+    private rolesConnections: Map<string, Set<string>> = new Map();
     private io: SocketIO.Server;
 
     constructor(httpServer: http.Server) {
@@ -18,11 +19,28 @@ export class SocketStreamRoom extends EventEmitter {
         this.io.origins('*:*');
 
         this.setupSockets();
+        this.connectRoles("default", "default");
+    }
+
+    public connectRoles(role1: string, role2: string): void {
+        const role1Set = this.getOrSetRoleSet(role1);
+        const role2Set = this.getOrSetRoleSet(role2);
+
+        role1Set.add(role2);
+        role2Set.add(role1);
+    }
+
+    public disconnectRoles(role1: string, role2: string): void {
+        const role1Set = this.getOrSetRoleSet(role1);
+        const role2Set = this.getOrSetRoleSet(role2);
+
+        role1Set.delete(role2);
+        role2Set.delete(role1);
     }
 
     public registerPeer(peer: Peer): void {
         console.log("Register Peer", peer.id);
-        this.notify('add-peer', peer.serialize());
+        this.notify('add-peer', peer, peer.serialize());
         this.peers.set(peer.id, peer);
     }
 
@@ -33,34 +51,72 @@ export class SocketStreamRoom extends EventEmitter {
     private setupSockets(): void {
         this.io.on('connection', (socket: Socket) => {
             const peer = new Peer(socket);
-            this.emit('connection', peer);
+
+            socket.on('connect-request', (payload: any) => {
+                this.emit('connection', peer, payload);
+            });
 
             socket.on('disconnect', () => {
-                if (this.isPeerRegistered(peer)) {
-                    console.log("Disconnect", socket.id);
-                    this.emit('disconnect', peer);
-                    this.peers.delete(peer.id);
-                    this.notify('peer-disconnected', peer.serialize());
-                }
+                if (!this.isPeerRegistered(peer)) return;
+                console.log("Disconnect", socket.id);
+                this.emit('disconnect', peer);
+                this.peers.delete(peer.id);
+                this.notify('peer-disconnected', peer, peer.serialize());
+
             });
 
             socket.on('signal', ({ target, signal }: SignalEvent) => {
+                if (!this.isPeerRegistered(peer)) return;
+                const targetPeer = this.peers.get(target);
+                if (!targetPeer || !this.arePeersConnected(peer, targetPeer)) return;
                 console.log(`Signal from ${socket.id} to ${target}`);
-                if (this.isPeerRegistered(peer)) {
-                    // TODO: validate signal
-                    const targetPeer = this.peers.get(target);
-                    if (targetPeer) targetPeer.emit('signal', {
-                        source: socket.id,
-                        signal
-                    });
-                }
+                targetPeer.emit('signal', {
+                    source: socket.id,
+                    signal
+                });
             });
         });
     }
 
-    private notify(event: string, data?: any): void {
-        for (const [_id, peer] of this.peers) {
+    private notify(event: string, sourcePeer: Peer, data?: any): void {
+        const connectedPeers = this.getPeersConnectedTo(sourcePeer);
+        for (const peer of connectedPeers) {
             peer.emit(event, data);
         }
+    }
+
+    private getOrSetRoleSet(role: string): Set<string> {
+        let roleSet = this.rolesConnections.get(role);
+        if (!roleSet) {
+            roleSet = new Set<string>();
+            this.rolesConnections.set(role, roleSet);
+        }
+        return roleSet;
+    }
+
+    // TODO: improve performance
+    private getPeersConnectedTo(peer: Peer): Array<Peer> {
+        return Array.from(this.peers.values()).filter((candidatePeer: Peer) => {
+            return this.arePeersConnected(peer, candidatePeer);
+        });
+    }
+
+    private arePeersConnected(peer1: Peer, peer2: Peer): boolean {
+        if (peer1.id === peer2.id) return false; // A peer cannot be connected to itself
+        for (const role1 of peer1.roles) {
+            for (const role2 of peer2.roles) {
+                if (this.areRolesConnected(role1, role2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private areRolesConnected(role1: string, role2: string): boolean {
+        if (!role1 || !role2) return false;
+        const role1Connections = this.rolesConnections.get(role1);
+        if (!role1Connections) return false;
+        return role1Connections.has(role2);
     }
 }

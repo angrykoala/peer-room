@@ -9,8 +9,13 @@ const server = new Server(app);
 
 const streamRoom = new SocketStreamRoom(server);
 
-streamRoom.on('connection', (peer: Peer) => {
-    console.log("Peer connected", peer.id);
+streamRoom.connectRoles('streamer', 'viewer');
+
+streamRoom.on('connection', (peer: Peer, payload: any) => {
+    console.log("Peer connected", peer.id, payload);
+    if (payload && payload.role) { // For security reasons, role must be explicitly set in server, if no role is defined, a default role will be assigned
+        peer.addRole(payload.role);
+    }
     streamRoom.registerPeer(peer);
 });
 

@@ -15,7 +15,9 @@ async function connect(): Promise<void> {
         location: document.location.host,
     });
 
-    socketStreamClient.connect();
+    socketStreamClient.connect({
+        role: 'viewer'
+    });
     socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
         let video: HTMLVideoElement;
         peer.on('stream', (stream) => {
