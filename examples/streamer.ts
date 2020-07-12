@@ -15,10 +15,11 @@ async function main(): Promise<void> {
 
     const socketStreamClient = new SocketStremClient({
         location: document.location.host,
+        room: 'streamer-example'
     });
 
     await socketStreamClient.connect({
-        role: 'streamer'
+        role: 'streamer',
     });
     socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
         peer.stream(stream);

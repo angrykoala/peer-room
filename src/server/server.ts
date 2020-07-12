@@ -1,7 +1,7 @@
-import http from 'http';
 import { EventEmitter } from 'events';
 import SocketIO, { Socket } from 'socket.io';
 import { Peer } from './peer';
+import { RoomDispatcher } from './room_dispatcher';
 
 type SignalEvent = {
     target: string
@@ -11,13 +11,14 @@ type SignalEvent = {
 export class SocketStreamRoom extends EventEmitter {
     private peers: Map<string, Peer> = new Map();
     private rolesConnections: Map<string, Set<string>> = new Map();
-    private io: SocketIO.Server;
+    private io: SocketIO.Namespace;
+    public readonly name: string;
 
-    constructor(httpServer: http.Server) {
+    constructor(io: SocketIO.Server, name: string = 'default') {
         super();
-        this.io = SocketIO(httpServer);
-        this.io.origins('*:*');
-
+        RoomDispatcher.registerRoom(name);
+        this.io = io.of(`socketstream_${name}`);
+        this.name = name;
         this.setupSockets();
         this.connectRoles("default", "default");
     }

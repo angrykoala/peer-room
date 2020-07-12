@@ -3,18 +3,23 @@ import { ClientPeer, ClientPeerEvents } from "./client_peer";
 import SimplePeer from "simple-peer";
 import { EventEmitter } from 'events';
 
+export type SocketStremClientOptions = {
+    location: string,
+    room?: string
+};
+
 export class SocketStremClient extends EventEmitter {
-    private options: SocketStremClientOptions;
+    private location: string;
     private socket?: SocketIOClient.Socket;
     private peers: Map<string, ClientPeer> = new Map();
 
     constructor(options: SocketStremClientOptions) {
         super();
-        this.options = options;
+        this.location = `${options.location}/socketstream_${options.room || 'default'}`;
     }
 
     public async connect(payload?: any): Promise<void> {
-        const socket = io.connect(this.options.location);
+        const socket = io.connect(this.location);
         socket.on('connect', () => {
             this.socket = socket;
             console.log("[Socket] Connected");
@@ -71,8 +76,3 @@ export class SocketStremClient extends EventEmitter {
         return peer;
     }
 }
-
-export type SocketStremClientOptions = {
-    location: string,
-    stream?: MediaStream
-};

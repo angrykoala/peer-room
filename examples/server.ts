@@ -3,19 +3,27 @@ import { Server } from 'http';
 import path from 'path';
 import { SocketStreamRoom } from '../src/server/server';
 import { Peer } from '../src/server/peer';
+import SocketIO from 'socket.io';
 
 const app = express();
 const server = new Server(app);
+const io = SocketIO(server);
 
-const streamRoom = new SocketStreamRoom(server);
+const streamerExampleRoom = new SocketStreamRoom(io, 'streamer-example');
 
-streamRoom.connectRoles('streamer', 'viewer');
+streamerExampleRoom.connectRoles('streamer', 'viewer');
 
-streamRoom.on('connection', (peer: Peer, payload: any) => {
-    console.log("Peer connected", peer.id, payload);
+streamerExampleRoom.on('connection', (peer: Peer, payload: any) => {
+    console.log("Peer connected to streamer room", peer.id, payload);
     if (payload && payload.role) { // For security reasons, role must be explicitly set in server, if no role is defined, a default role will be assigned
         peer.addRole(payload.role);
     }
+    streamerExampleRoom.registerPeer(peer);
+});
+
+const streamRoom = new SocketStreamRoom(io);
+streamRoom.on('connection', (peer: Peer) => {
+    console.log("Peer connected to default room");
     streamRoom.registerPeer(peer);
 });
 

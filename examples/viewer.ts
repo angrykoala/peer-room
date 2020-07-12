@@ -13,6 +13,7 @@ async function connect(): Promise<void> {
 
     const socketStreamClient = new SocketStremClient({
         location: document.location.host,
+        room: 'streamer-example'
     });
 
     socketStreamClient.connect({
