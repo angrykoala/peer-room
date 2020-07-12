@@ -23,9 +23,7 @@ async function connect(): Promise<void> {
 
     (window as any).userStream = stream;
 
-    const socketStreamClient = new SocketStremClient({
-        location: document.location.host,
-    });
+    const socketStreamClient = new SocketStremClient();
 
     socketStreamClient.connect();
     socketStreamClient.on('peer-connected', (peer: ClientPeer) => {

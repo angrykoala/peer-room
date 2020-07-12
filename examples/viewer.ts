@@ -12,7 +12,6 @@ async function connect(): Promise<void> {
     const videoList = document.querySelector('#videos')!;
 
     const socketStreamClient = new SocketStremClient({
-        location: document.location.host,
         room: 'streamer-example'
     });
 

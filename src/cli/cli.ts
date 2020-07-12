@@ -4,7 +4,7 @@ import SimplePeer from "simple-peer";
 import { EventEmitter } from 'events';
 
 export type SocketStremClientOptions = {
-    location: string,
+    location?: string,
     room?: string
 };
 
@@ -13,9 +13,9 @@ export class SocketStremClient extends EventEmitter {
     private socket?: SocketIOClient.Socket;
     private peers: Map<string, ClientPeer> = new Map();
 
-    constructor(options: SocketStremClientOptions) {
+    constructor(options: SocketStremClientOptions = {}) {
         super();
-        this.location = `${options.location}/socketstream_${options.room || 'default'}`;
+        this.location = `${options.location || document.location.host}/socketstream_${options.room || 'default'}`;
     }
 
     public async connect(payload?: any): Promise<void> {

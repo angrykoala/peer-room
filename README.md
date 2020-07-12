@@ -4,68 +4,52 @@ WebRTC + Sockets for a lovely P2P
 > Warning: under heavy development, this will go kaboom 💥
 
 
-* `npm run examples` to run examples in localhost:1222
+* `npm run examples` to run examples on http://localhost:1222
 
+## Getting started
 
-
-> Warning: The following is a first design on how this is **intended** to work, not how this works currently
-# Define topology of an use case
-* **Rooms**
-  * Every peer belongs to a room
-* **Roles**
-  * Every peer has one or more roles
-  * Roles define who knows who (e.g. A streamer does not know about admins, but admin knows about everyone)
+The following example connects multiple peers and sends a video stream
 
 ```js
+const io = require('socket.io')(httpServer); // Here goes your express or http server
 
-const room = new SocketStreamRoom('name');
+const SocketStream = require('socket-stream');
 
-const adminRole=room.registerRole("admin"); // By default, admin does not connect to anything
-const streamerRole=room.registerRole("streamer");
-const viewerRole=room.registerRole("viewer", [streamerRole]); //Connect streamers and vieewers
+const socketStreamRoom = new SocketStream(io);
 
-viewerRole.connect(streamerRole) //Connect streamers and vieewers (same as before)
+socketStreamRoom.on('connection', (peerCandidate) => {
+    socketStreamRoom.registerPeer(peerCandidate);
+});
 
-room.on('connect', (peerCandidate)=>{
-    // Security goes here
-   const peer=room.registerPeer(peerCandidate, [adminRole]); // Sets peer as admin
-   if(whatever){
-     peer.connectTo(anotherPeer) // Connects with a particular peer
-     peer.connectTo("streamer") // Connects to all streamers
-   }
-})
+
+httpServer.listen(3000);
 ```
 _server.js_
 
 
 ```js
-const connection= new SocketStream("url", {"myData": "data"})
+const stream = await navigator.mediaDevices.getUserMedia({
+    audio: false
+});
 
-connection.peers // up-to-date peers data
-connection.role
+const socketStreamClient = new SocketStremClient();
 
-connection.on('connect', (socket, role)=>{
-  // Connected to server
-})
-
-connection.on('peer',(peer)=>{
-  // New peer connection (simplePeer already handled)
-  peer.on('stream',(stream)=>{
-    // stream received
-  })
-  peer.on('msg',()=>{
-    // socket msg
-  })
-
-  peer.socket.emit()//socket emit?
-  peer.send() // p2p emit
-  peer.stream(stream) // p2p send stream
-})
-
+socketStreamClient.connect();
+socketStreamClient.on('peer-connected', (peer) => {
+    console.log("Peer connected");
+    peer.stream(stream); // Send stream to connected peer
+    peer.on('stream', (peerStream) => {
+      // attach remote stream to html video
+    });
+});
 ```
-
 _client.js_
 
+## Roles
 
-## SocketStore
+
+## Rooms
+
+
+## SocketStore <to do>
 * Data synced among certain roles (blackboard)
