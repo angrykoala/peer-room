@@ -1,5 +1,6 @@
 import SimplePeer from 'simple-peer';
 import { EventEmitter } from 'events';
+import { SocketEvents } from '../common/types';
 
 export enum ClientPeerEvents {
     disconnect = 'disconnect',
@@ -48,7 +49,7 @@ export class ClientPeer extends EventEmitter {
         const peer = new SimplePeer(options);
         peer.on('signal', signal => {
             console.log("[Webrtc] Signal");
-            this.socket.emit('signal', {
+            this.socket.emit(SocketEvents.Signal, {
                 signal: signal,
                 target: this.id
             });

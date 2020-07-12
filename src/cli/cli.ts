@@ -2,6 +2,7 @@ import * as io from "socket.io-client";
 import { ClientPeer, ClientPeerEvents } from "./client_peer";
 import SimplePeer from "simple-peer";
 import { EventEmitter } from 'events';
+import { ConnectionRequestResponse, SocketEvents } from "../common/types";
 
 export type SocketStremClientOptions = {
     location?: string,
@@ -12,6 +13,7 @@ export class SocketStremClient extends EventEmitter {
     private location: string;
     private socket?: SocketIOClient.Socket;
     private peers: Map<string, ClientPeer> = new Map();
+    private iceServers?: Array<RTCIceServer>;
 
     constructor(options: SocketStremClientOptions = {}) {
         super();
@@ -23,24 +25,29 @@ export class SocketStremClient extends EventEmitter {
         socket.on('connect', () => {
             this.socket = socket;
             console.log("[Socket] Connected");
-            this.socket.emit("connect-request", payload);
+            this.socket.emit(SocketEvents.ConnectRequest, payload, (responseData: ConnectionRequestResponse) => {
+                console.log("[Socket] Connection Accepted");
+                if (responseData.iceServers) {
+                    this.iceServers = responseData.iceServers;
+                }
+            });
         });
 
         socket.on('disconnect', () => {
             console.log("[Socket] Disconnected");
         });
 
-        socket.on('add-peer', (peerData: { id: string }) => {
+        socket.on(SocketEvents.AddPeer, (peerData: { id: string }) => {
             console.log("[Socket] Add peer", peerData);
             this.setupPeer(peerData.id, true);
         });
 
-        socket.on('peer-disconnected', (peerData: { id: string }) => {
+        socket.on(SocketEvents.PeerDisconnected, (peerData: { id: string }) => {
             console.log("[Socket] Peer Disconnected");
             this.disconnectPeer(peerData.id);
         });
 
-        socket.on('signal', ({ source, signal }: { source: string, signal: string | SimplePeer.SignalData }) => {
+        socket.on(SocketEvents.Signal, ({ source, signal }: { source: string, signal: string | SimplePeer.SignalData }) => {
             let peer = this.peers.get(source);
             if (!peer) { // TODO: validate this is the first signal, and not a leftover from deleted peers
                 peer = this.setupPeer(source, false);
@@ -62,12 +69,12 @@ export class SocketStremClient extends EventEmitter {
     private setupPeer(id: string, initiator: boolean): ClientPeer {
         if (!this.socket) throw new Error();
         const peer = new ClientPeer(id, this.socket, {
-            initiator
+            initiator,
+            config: {
+                iceServers: this.iceServers
+            }
         });
         this.peers.set(peer.id, peer);
-
-        // TODO: connected is may be received before other events
-        // Try to queue all other events to be sent afterwards
 
         peer.on(ClientPeerEvents.connect, () => {
             this.emit('peer-connected', peer);

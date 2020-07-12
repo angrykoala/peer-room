@@ -2,23 +2,30 @@ import { EventEmitter } from 'events';
 import SocketIO, { Socket } from 'socket.io';
 import { Peer } from './peer';
 import { RoomDispatcher } from './room_dispatcher';
+import { ConnectionRequestResponse, SocketEvents } from '../common/types';
 
 type SignalEvent = {
     target: string
     signal: any
 };
 
+export type SocketStreamRoomOptions = {
+    iceServers?: Array<RTCIceServer>
+};
+
 export class SocketStreamRoom extends EventEmitter {
     private peers: Map<string, Peer> = new Map();
     private rolesConnections: Map<string, Set<string>> = new Map();
     private io: SocketIO.Namespace;
+    private options: SocketStreamRoomOptions;
     public readonly name: string;
 
-    constructor(io: SocketIO.Server, name: string = 'default') {
+    constructor(io: SocketIO.Server, name: string = 'default', options: SocketStreamRoomOptions = {}) {
         super();
         RoomDispatcher.registerRoom(name);
         this.io = io.of(`socketstream_${name}`);
         this.name = name;
+        this.options = options;
         this.setupSockets();
         this.connectRoles("default", "default");
     }
@@ -41,7 +48,7 @@ export class SocketStreamRoom extends EventEmitter {
 
     public registerPeer(peer: Peer): void {
         console.log("Register Peer", peer.id);
-        this.notify('add-peer', peer, peer.serialize());
+        this.notify(SocketEvents.AddPeer, peer, peer.serialize());
         this.peers.set(peer.id, peer);
     }
 
@@ -53,8 +60,11 @@ export class SocketStreamRoom extends EventEmitter {
         this.io.on('connection', (socket: Socket) => {
             const peer = new Peer(socket);
 
-            socket.on('connect-request', (payload: any) => {
+            socket.on(SocketEvents.ConnectRequest, (payload: any, response: (response: ConnectionRequestResponse) => void) => {
                 this.emit('connection', peer, payload);
+                response({
+                    iceServers: this.options.iceServers
+                });
             });
 
             socket.on('disconnect', () => {
@@ -62,16 +72,16 @@ export class SocketStreamRoom extends EventEmitter {
                 console.log("Disconnect", socket.id);
                 this.emit('disconnect', peer);
                 this.peers.delete(peer.id);
-                this.notify('peer-disconnected', peer, peer.serialize());
+                this.notify(SocketEvents.PeerDisconnected, peer, peer.serialize());
 
             });
 
-            socket.on('signal', ({ target, signal }: SignalEvent) => {
+            socket.on(SocketEvents.Signal, ({ target, signal }: SignalEvent) => {
                 if (!this.isPeerRegistered(peer)) return;
                 const targetPeer = this.peers.get(target);
                 if (!targetPeer || !this.arePeersConnected(peer, targetPeer)) return;
                 console.log(`Signal from ${socket.id} to ${target}`);
-                targetPeer.emit('signal', {
+                targetPeer.emit(SocketEvents.Signal, {
                     source: socket.id,
                     signal
                 });
@@ -79,7 +89,7 @@ export class SocketStreamRoom extends EventEmitter {
         });
     }
 
-    private notify(event: string, sourcePeer: Peer, data?: any): void {
+    private notify(event: SocketEvents, sourcePeer: Peer, data?: any): void {
         const connectedPeers = this.getPeersConnectedTo(sourcePeer);
         for (const peer of connectedPeers) {
             peer.emit(event, data);

@@ -50,6 +50,10 @@ _client.js_
 
 ## Rooms
 
+## STUN and TURN
+
+
+### Coturn
 
 ## SocketStore <to do>
 * Data synced among certain roles (blackboard)

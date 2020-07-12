@@ -1,15 +1,19 @@
 import express from 'express';
 import { Server } from 'http';
 import path from 'path';
-import { SocketStreamRoom } from '../src/server/server';
 import { Peer } from '../src/server/peer';
 import SocketIO from 'socket.io';
+import { SocketStreamRoom } from '../src/server/room';
 
 const app = express();
 const server = new Server(app);
 const io = SocketIO(server);
 
-const streamerExampleRoom = new SocketStreamRoom(io, 'streamer-example');
+const streamerExampleRoom = new SocketStreamRoom(io, 'streamer-example', {
+    // iceServers: [{  // Using custom ice servers
+    //   urls: "stun:global.stun.twilio.com:3478?transport=udp"
+    // }]
+});
 
 streamerExampleRoom.connectRoles('streamer', 'viewer');
 
