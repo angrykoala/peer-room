@@ -48,8 +48,25 @@ export class SocketStreamRoom extends EventEmitter {
 
     public registerPeer(peer: Peer): void {
         console.log("Register Peer", peer.id);
-        this.notify(SocketEvents.AddPeer, peer, peer.serialize());
+        this.notifyPeersOf(SocketEvents.AddPeer, peer, peer.serialize());
         this.peers.set(peer.id, peer);
+    }
+
+    public send(event: string, target: Peer | string, data?: any): void {
+        if (target instanceof Peer) {
+            target.emit(event, data);
+        } else {
+            this.getPeersOfRole(target).forEach((peer: Peer) => {
+                peer.emit(event, data);
+            });
+        }
+    }
+
+    public notifyPeersOf(event: string, sourcePeer: Peer, data?: any): void {
+        const connectedPeers = this.getPeersConnectedTo(sourcePeer);
+        for (const peer of connectedPeers) {
+            peer.emit(event, data);
+        }
     }
 
     public isPeerRegistered(peer: Peer): boolean {
@@ -72,7 +89,7 @@ export class SocketStreamRoom extends EventEmitter {
                 console.log("Disconnect", socket.id);
                 this.emit('disconnect', peer);
                 this.peers.delete(peer.id);
-                this.notify(SocketEvents.PeerDisconnected, peer, peer.serialize());
+                this.notifyPeersOf(SocketEvents.PeerDisconnected, peer, peer.serialize());
 
             });
 
@@ -89,13 +106,6 @@ export class SocketStreamRoom extends EventEmitter {
         });
     }
 
-    private notify(event: SocketEvents, sourcePeer: Peer, data?: any): void {
-        const connectedPeers = this.getPeersConnectedTo(sourcePeer);
-        for (const peer of connectedPeers) {
-            peer.emit(event, data);
-        }
-    }
-
     private getOrSetRoleSet(role: string): Set<string> {
         let roleSet = this.rolesConnections.get(role);
         if (!roleSet) {
@@ -103,6 +113,12 @@ export class SocketStreamRoom extends EventEmitter {
             this.rolesConnections.set(role, roleSet);
         }
         return roleSet;
+    }
+
+    private getPeersOfRole(role: string): Array<Peer> {
+        return Array.from(this.peers.values()).filter((candidatePeer: Peer) => {
+            return candidatePeer.hasRole(role);
+        });
     }
 
     // TODO: improve performance

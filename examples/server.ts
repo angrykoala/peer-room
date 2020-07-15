@@ -9,26 +9,26 @@ const app = express();
 const server = new Server(app);
 const io = SocketIO(server);
 
-const streamerExampleRoom = new SocketStreamRoom(io, 'streamer-example', {
+const streamerRoom = new SocketStreamRoom(io, 'streamer-example', {
     // iceServers: [{  // Using custom ice servers
     //   urls: "stun:global.stun.twilio.com:3478?transport=udp"
     // }]
 });
 
-streamerExampleRoom.connectRoles('streamer', 'viewer');
+streamerRoom.connectRoles('streamer', 'viewer');
 
-streamerExampleRoom.on('connection', (peer: Peer, payload: any) => {
+streamerRoom.on('connection', (peer: Peer, payload: any) => {
     console.log("Peer connected to streamer room", peer.id, payload);
     if (payload && payload.role) { // For security reasons, role must be explicitly set in server, if no role is defined, a default role will be assigned
         peer.addRole(payload.role);
     }
-    streamerExampleRoom.registerPeer(peer);
+    streamerRoom.registerPeer(peer);
 });
 
-const streamRoom = new SocketStreamRoom(io);
-streamRoom.on('connection', (peer: Peer) => {
+const chatRoom = new SocketStreamRoom(io);
+chatRoom.on('connection', (peer: Peer) => {
     console.log("Peer connected to default room");
-    streamRoom.registerPeer(peer);
+    chatRoom.registerPeer(peer);
 });
 
 app.use(express.static(path.join(__dirname, 'dist')));

@@ -38,6 +38,10 @@ export class Peer {
         this.socket.emit(event, data);
     }
 
+    public on(event: string, listener: (...args: Array<any>) => void): void {
+        this.socket.on(event, listener);
+    }
+
     public serialize(): SerializedPeer {
         return {
             id: this.id

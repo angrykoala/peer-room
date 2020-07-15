@@ -4,9 +4,15 @@ WebRTC + Sockets for a lovely P2P
 > Warning: under heavy development, this will go kaboom 💥
 
 
-* `npm run examples` to run examples on http://localhost:1222
+* Peer roles
+* Rooms support
+* Server-side network configuration and security
+* P2P stream support
+
 
 ## Getting started
+
+* `npm run examples` to run examples on http://localhost:1222
 
 The following example connects multiple peers and sends a video stream
 
