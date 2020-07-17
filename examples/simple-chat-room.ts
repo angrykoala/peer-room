@@ -2,6 +2,7 @@ import { ClientPeer } from "../src/cli/client_peer";
 import { SocketStremClient } from "../src/cli/cli";
 
 const connectButton = document.querySelector('#connectButton') as HTMLButtonElement;
+const buzzButton = document.querySelector('#buzzButton') as HTMLButtonElement;
 
 connectButton.addEventListener("click", () => {
     connectButton.disabled = true;
@@ -23,12 +24,23 @@ async function connect(): Promise<void> {
 
     (window as any).userStream = stream;
 
+    buzzButton.disabled = false;
+
     const socketStreamClient = new SocketStremClient();
 
     socketStreamClient.connect();
+    socketStreamClient.on('ready', () => {
+        buzzButton.addEventListener("click", () => {
+            socketStreamClient.send('buzz'); // Sends to server
+        });
+
+        socketStreamClient.onMessage('buzz', () => {
+            console.log("Buzzed");
+        });
+    });
     socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
         console.log("Peer connected");
-        peer.sendData("Hello :3");
+        peer.sendData("Hello :3"); // Sends using p2p connection
         let video: HTMLVideoElement;
 
         peer.stream(stream);

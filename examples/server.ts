@@ -29,6 +29,10 @@ const chatRoom = new SocketStreamRoom(io);
 chatRoom.on('connection', (peer: Peer) => {
     console.log("Peer connected to default room");
     chatRoom.registerPeer(peer);
+
+    peer.on('buzz', () => {
+        chatRoom.notifyPeersOf('buzz', peer);
+    });
 });
 
 app.use(express.static(path.join(__dirname, 'dist')));

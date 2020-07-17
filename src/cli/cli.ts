@@ -30,6 +30,7 @@ export class SocketStremClient extends EventEmitter {
                 if (responseData.iceServers) {
                     this.iceServers = responseData.iceServers;
                 }
+                this.emit('ready');
             });
         });
 
@@ -56,6 +57,16 @@ export class SocketStremClient extends EventEmitter {
             peer.signal(signal);
             console.log("[Socket] Signal", source, signal);
         });
+    }
+
+    public onMessage(event: string, fn: Function): void {
+        if (!this.socket) throw new Error();
+        this.socket.on(event, fn)
+    }
+
+    public send(event: string, payload?: any): void {
+        if (!this.socket) throw new Error();
+        this.socket.emit(event);
     }
 
     private disconnectPeer(id: string): void {
