@@ -17,13 +17,5 @@
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true
   },
-  "compileOnSave": true,
-  "includes": [
-    "index.ts",
-    "cli.ts",
-    "globals.d.ts"
-  ],
-  "exclude": [
-    "examples"
-  ]
+  "compileOnSave": true
 }

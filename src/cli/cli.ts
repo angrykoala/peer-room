@@ -4,18 +4,18 @@ import SimplePeer from "simple-peer";
 import { EventEmitter } from 'events';
 import { ConnectionRequestResponse, SocketEvents } from "../common/types";
 
-export type SocketStremClientOptions = {
+export type SocketStreamClientOptions = {
     location?: string,
     room?: string
 };
 
-export class SocketStremClient extends EventEmitter {
+export class SocketStreamClient extends EventEmitter {
     private location: string;
     private socket?: SocketIOClient.Socket;
     private peers: Map<string, ClientPeer> = new Map();
     private iceServers?: Array<RTCIceServer>;
 
-    constructor(options: SocketStremClientOptions = {}) {
+    constructor(options: SocketStreamClientOptions = {}) {
         super();
         this.location = `${options.location || document.location.host}/socketstream_${options.room || 'default'}`;
     }
@@ -61,12 +61,12 @@ export class SocketStremClient extends EventEmitter {
 
     public onMessage(event: string, fn: Function): void {
         if (!this.socket) throw new Error();
-        this.socket.on(event, fn)
+        this.socket.on(event, fn);
     }
 
     public send(event: string, payload?: any): void {
         if (!this.socket) throw new Error();
-        this.socket.emit(event);
+        this.socket.emit(event, payload);
     }
 
     private disconnectPeer(id: string): void {

@@ -2,14 +2,15 @@
   "name": "socket-stream",
   "version": "0.1.0",
   "description": "WebRTC + Sockets for a lovely P2P",
-  "main": "dist/server/server.js",
+  "main": "dist/index",
+  "types": "dist/index.d.ts",
   "scripts": {
     "tsc": "rm -rf dist && tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "tslint": "tslint *.ts src/*.ts src/*/*.ts src/*/*/*.ts examples/*.ts --fix",
     "examples-frontend": "parcel watch examples/*.html -d examples/dist",
     "examples-server": "ts-node examples/server.ts",
-    "examples": "concurrently --kill-others \"npm run examples-frontend\" \"npm run examples-server\""
+    "examples": "concurrently --kill-others \"npm run examples-frontend\" \"npm run examples-server\"",
+    "prepublishOnly": "npm run tslint && npm run tsc"
   },
   "repository": {
     "type": "git",

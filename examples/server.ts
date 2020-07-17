@@ -3,7 +3,7 @@ import { Server } from 'http';
 import path from 'path';
 import { Peer } from '../src/server/peer';
 import SocketIO from 'socket.io';
-import { SocketStreamRoom } from '../src/server/room';
+import { SocketStreamRoom } from '..';
 
 const app = express();
 const server = new Server(app);
