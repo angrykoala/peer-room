@@ -3,13 +3,13 @@ import { Server } from 'http';
 import path from 'path';
 import { Peer } from '../src/server/peer';
 import SocketIO from 'socket.io';
-import { PeerRoom } from '..';
+import { SocketWebRTCRoom } from '..';
 
 const app = express();
 const server = new Server(app);
 const io = SocketIO(server);
 
-const streamerRoom = new PeerRoom(io, 'streamer-example', {
+const streamerRoom = new SocketWebRTCRoom(io, 'streamer-example', {
     // iceServers: [{  // Using custom ice servers
     //   urls: "stun:global.stun.twilio.com:3478?transport=udp"
     // }]
@@ -25,7 +25,7 @@ streamerRoom.on('connection', (peer: Peer, payload: any) => {
     streamerRoom.registerPeer(peer);
 });
 
-const chatRoom = new PeerRoom(io);
+const chatRoom = new SocketWebRTCRoom(io);
 chatRoom.on('connection', (peer: Peer) => {
     console.log("Peer connected to default room");
     chatRoom.registerPeer(peer);

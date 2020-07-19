@@ -9,18 +9,18 @@ type SignalEvent = {
     signal: any
 };
 
-export type PeerRoomOptions = {
+export type SocketWebRTCRoomOptions = {
     iceServers?: Array<RTCIceServer>
 };
 
-export class PeerRoom extends EventEmitter {
+export class SocketWebRTCRoom extends EventEmitter {
     private peers: Map<string, Peer> = new Map();
     private rolesConnections: Map<string, Set<string>> = new Map();
     private io: SocketIO.Namespace;
-    private options: PeerRoomOptions;
+    private options: SocketWebRTCRoomOptions;
     public readonly name: string;
 
-    constructor(io: SocketIO.Server, name: string = 'default', options: PeerRoomOptions = {}) {
+    constructor(io: SocketIO.Server, name: string = 'default', options: SocketWebRTCRoomOptions = {}) {
         super();
         RoomDispatcher.registerRoom(name);
         this.io = io.of(`socketstream_${name}`);

@@ -1,5 +1,5 @@
 import { ClientPeer } from "../src/cli/client_peer";
-import { PeerRoomCLient } from "..";
+import { SocketWebRTCClient } from "..";
 
 const connectButton = document.querySelector('#connectButton') as HTMLButtonElement;
 
@@ -11,14 +11,14 @@ connectButton.addEventListener("click", () => {
 async function connect(): Promise<void> {
     const videoList = document.querySelector('#videos')!;
 
-    const socketStreamClient = new PeerRoomCLient({
+    const socketWebRTCClient = new SocketWebRTCClient({
         room: 'streamer-example'
     });
 
-    socketStreamClient.connect({
+    socketWebRTCClient.connect({
         role: 'viewer'
     });
-    socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
+    socketWebRTCClient.on('peer-connected', (peer: ClientPeer) => {
         let video: HTMLVideoElement;
         peer.on('stream', (stream) => {
             console.log('stream', stream);

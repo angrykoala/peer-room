@@ -1,4 +1,4 @@
-# socket-stream
+# Socket-WebRTC
 WebRTC + Sockets for a lovely P2P
 
 > Warning: under heavy development, this will go kaboom 💥
@@ -19,12 +19,12 @@ The following example connects multiple peers and sends a video stream
 ```js
 const io = require('socket.io')(httpServer); // Here goes your express or http server
 
-const SocketStream = require('socket-stream');
+const {SocketWebRTCRoom} = require('socket-webrtc');
 
-const socketStreamRoom = new SocketStream(io);
+const socketWebRTCRoom = new SocketWebRTCRoom(io);
 
-socketStreamRoom.on('connection', (peerCandidate) => {
-    socketStreamRoom.registerPeer(peerCandidate);
+socketWebRTCRoom.on('connection', (peerCandidate) => {
+    socketWebRTCRoom.registerPeer(peerCandidate);
 });
 
 
@@ -38,10 +38,10 @@ const stream = await navigator.mediaDevices.getUserMedia({
     audio: false
 });
 
-const socketStreamClient = new SocketStremClient();
+const socketWebRTCClient = new SocketWebRTCClient();
 
-socketStreamClient.connect();
-socketStreamClient.on('peer-connected', (peer) => {
+socketWebRTCClient.connect();
+socketWebRTCClient.on('peer-connected', (peer) => {
     console.log("Peer connected");
     peer.stream(stream); // Send stream to connected peer
     peer.on('stream', (peerStream) => {
@@ -50,6 +50,8 @@ socketStreamClient.on('peer-connected', (peer) => {
 });
 ```
 _client.js_
+
+> Check examples folder for more working examples
 
 ## Roles
 
@@ -60,6 +62,3 @@ _client.js_
 
 
 ### Coturn
-
-## SocketStore <to do>
-* Data synced among certain roles (blackboard)

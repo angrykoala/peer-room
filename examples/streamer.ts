@@ -1,5 +1,5 @@
 import { ClientPeer } from "../src/cli/client_peer";
-import { PeerRoomCLient } from "..";
+import { SocketWebRTCClient } from "..";
 
 async function main(): Promise<void> {
     const videoConstrains = [800, 600];
@@ -13,14 +13,14 @@ async function main(): Promise<void> {
         audio: false
     });
 
-    const socketStreamClient = new PeerRoomCLient({
+    const socketWebRTCClient = new SocketWebRTCClient({
         room: 'streamer-example'
     });
 
-    await socketStreamClient.connect({
+    await socketWebRTCClient.connect({
         role: 'streamer',
     });
-    socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
+    socketWebRTCClient.on('peer-connected', (peer: ClientPeer) => {
         peer.stream(stream);
     });
 }

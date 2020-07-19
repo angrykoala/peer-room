@@ -4,18 +4,18 @@ import SimplePeer from "simple-peer";
 import { EventEmitter } from 'events';
 import { ConnectionRequestResponse, SocketEvents } from "../common/types";
 
-export type PeerRoomCLientOptions = {
+export type SocketWebRTCClientOptions = {
     location?: string,
     room?: string
 };
 
-export class PeerRoomCLient extends EventEmitter {
+export class SocketWebRTCClient extends EventEmitter {
     private location: string;
     private socket?: SocketIOClient.Socket;
     private peers: Map<string, ClientPeer> = new Map();
     private iceServers?: Array<RTCIceServer>;
 
-    constructor(options: PeerRoomCLientOptions = {}) {
+    constructor(options: SocketWebRTCClientOptions = {}) {
         super();
         this.location = `${options.location || document.location.host}/socketstream_${options.room || 'default'}`;
     }

@@ -1,5 +1,5 @@
 import { ClientPeer } from "../src/cli/client_peer";
-import { PeerRoomCLient } from "..";
+import { SocketWebRTCClient } from "..";
 
 const connectButton = document.querySelector('#connectButton') as HTMLButtonElement;
 const buzzButton = document.querySelector('#buzzButton') as HTMLButtonElement;
@@ -26,19 +26,19 @@ async function connect(): Promise<void> {
 
     buzzButton.disabled = false;
 
-    const socketStreamClient = new PeerRoomCLient();
+    const socketWebRTCClient = new SocketWebRTCClient();
 
-    socketStreamClient.connect();
-    socketStreamClient.on('ready', () => {
+    socketWebRTCClient.connect();
+    socketWebRTCClient.on('ready', () => {
         buzzButton.addEventListener("click", () => {
-            socketStreamClient.send('buzz'); // Sends to server
+            socketWebRTCClient.send('buzz'); // Sends to server
         });
 
-        socketStreamClient.onMessage('buzz', () => {
+        socketWebRTCClient.onMessage('buzz', () => {
             console.log("Buzzed");
         });
     });
-    socketStreamClient.on('peer-connected', (peer: ClientPeer) => {
+    socketWebRTCClient.on('peer-connected', (peer: ClientPeer) => {
         console.log("Peer connected");
         peer.sendData("Hello :3"); // Sends using p2p connection
         let video: HTMLVideoElement;
