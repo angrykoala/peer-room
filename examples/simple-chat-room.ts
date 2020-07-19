@@ -1,5 +1,5 @@
 import { ClientPeer } from "../src/cli/client_peer";
-import { SocketStreamClient } from "..";
+import { PeerRoomCLient } from "..";
 
 const connectButton = document.querySelector('#connectButton') as HTMLButtonElement;
 const buzzButton = document.querySelector('#buzzButton') as HTMLButtonElement;
@@ -26,7 +26,7 @@ async function connect(): Promise<void> {
 
     buzzButton.disabled = false;
 
-    const socketStreamClient = new SocketStreamClient();
+    const socketStreamClient = new PeerRoomCLient();
 
     socketStreamClient.connect();
     socketStreamClient.on('ready', () => {

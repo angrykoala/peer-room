@@ -1,5 +1,5 @@
 import { ClientPeer } from "../src/cli/client_peer";
-import { SocketStreamClient } from "..";
+import { PeerRoomCLient } from "..";
 
 const connectButton = document.querySelector('#connectButton') as HTMLButtonElement;
 
@@ -11,7 +11,7 @@ connectButton.addEventListener("click", () => {
 async function connect(): Promise<void> {
     const videoList = document.querySelector('#videos')!;
 
-    const socketStreamClient = new SocketStreamClient({
+    const socketStreamClient = new PeerRoomCLient({
         room: 'streamer-example'
     });
 

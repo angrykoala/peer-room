@@ -1,5 +1,5 @@
 import { ClientPeer } from "../src/cli/client_peer";
-import { SocketStreamClient } from "..";
+import { PeerRoomCLient } from "..";
 
 async function main(): Promise<void> {
     const videoConstrains = [800, 600];
@@ -13,7 +13,7 @@ async function main(): Promise<void> {
         audio: false
     });
 
-    const socketStreamClient = new SocketStreamClient({
+    const socketStreamClient = new PeerRoomCLient({
         room: 'streamer-example'
     });
 

@@ -1,2 +1,2 @@
-export { SocketStreamClient } from "./src/cli/cli";
-export { SocketStreamRoom } from "./src/server/room";
+export { PeerRoomCLient } from "./src/cli/cli";
+export { PeerRoom } from "./src/server/room";

@@ -1,25 +1,24 @@
 {
-  "name": "socket-stream",
+  "name": "peer-room",
   "version": "0.1.0",
   "description": "WebRTC + Sockets for a lovely P2P",
   "main": "dist/index",
-  "types": "dist/index.d.ts",
+  "types": "dist/main.d.ts",
   "scripts": {
     "tsc": "rm -rf dist && tsc",
     "tslint": "tslint *.ts src/*.ts src/*/*.ts src/*/*/*.ts examples/*.ts --fix",
     "examples-frontend": "parcel watch examples/*.html -d examples/dist",
     "examples-server": "ts-node examples/server.ts",
-    "examples": "concurrently --kill-others \"npm run examples-frontend\" \"npm run examples-server\"",
+    "examples": "npm run tsc && concurrently --kill-others \"npm run examples-frontend\" \"npm run examples-server\"",
     "prepublishOnly": "npm run tslint && npm run tsc"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/angrykoala/socket-stream.git"
+    "url": "git+https://github.com/angrykoala/peer-room.git"
   },
   "files": [
     "dist"
   ],
-  "types": "dist/main.d.ts",
   "keywords": [
     "webrtc",
     "socket",
@@ -32,16 +31,16 @@
   "author": "angrykoala <angrykoala@outlook.es>",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/angrykoala/socket-stream/issues"
+    "url": "https://github.com/angrykoala/peer-room/issues"
   },
-  "homepage": "https://github.com/angrykoala/socket-stream#readme",
+  "homepage": "https://github.com/angrykoala/peer-room#readme",
   "dependencies": {
     "simple-peer": "^9.7.2",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.7",
-    "@types/node": "^14.0.22",
+    "@types/node": "^14.0.23",
     "@types/simple-peer": "^9.6.0",
     "@types/socket.io": "^2.1.8",
     "@types/socket.io-client": "^1.4.33",
@@ -50,6 +49,6 @@
     "parcel": "^1.12.4",
     "ts-node": "^8.10.2",
     "tslint": "^6.1.2",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.7"
   }
 }
