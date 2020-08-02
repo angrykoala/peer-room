@@ -20,7 +20,7 @@ export class SocketWebRTCClient extends EventEmitter {
         this.location = `${options.location || document.location.host}/socketstream_${options.room || 'default'}`;
     }
 
-    public async connect(payload?: any): Promise<void> {
+    public connect(payload?: any): void {
         const socket = io.connect(this.location);
         socket.on('connect', () => {
             this.socket = socket;
@@ -60,7 +60,7 @@ export class SocketWebRTCClient extends EventEmitter {
     }
 
     public onMessage(event: string, fn: Function): void {
-        if (!this.socket) throw new Error();
+        if (!this.socket) throw new Error("socket not found onMessage");
         this.socket.on(event, fn);
     }
 
