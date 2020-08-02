@@ -31,7 +31,7 @@ chatRoom.on('connection', (peer: Peer) => {
     chatRoom.registerPeer(peer);
 
     peer.on('buzz', () => {
-        chatRoom.notifyPeersOf('buzz', peer);
+        chatRoom.notifyPeersOf(peer, 'buzz');
     });
 });
 

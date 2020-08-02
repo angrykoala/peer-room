@@ -3,6 +3,7 @@ import SocketIO, { Socket } from 'socket.io';
 import { Peer } from './peer';
 import { RoomDispatcher } from './room_dispatcher';
 import { ConnectionRequestResponse, SocketEvents } from '../common/types';
+import { arrayfy } from '../common/utils';
 
 type SignalEvent = {
     target: string
@@ -48,21 +49,19 @@ export class SocketWebRTCRoom extends EventEmitter {
 
     public registerPeer(peer: Peer): void {
         console.log("Register Peer", peer.id);
-        this.notifyPeersOf(SocketEvents.AddPeer, peer, peer.serialize());
+        this.notifyPeersOf(peer, SocketEvents.AddPeer, peer.serialize());
         this.peers.set(peer.id, peer);
     }
 
-    public send(event: string, target: Peer | string, data?: any): void {
-        if (target instanceof Peer) {
-            target.emit(event, data);
-        } else {
-            this.getPeersOfRole(target).forEach((peer: Peer) => {
-                peer.emit(event, data);
-            });
-        }
+    public sendTo(target: Peer | string | Array<Peer> | Array<string>, event: string, data?: any): void {
+        const targets = arrayfy(target);
+
+        targets.forEach((peerOrRole: Peer | string) => {
+            this.sendToPeerOrRole(peerOrRole, event, data);
+        });
     }
 
-    public notifyPeersOf(event: string, sourcePeer: Peer, data?: any): void {
+    public notifyPeersOf(sourcePeer: Peer, event: string, data?: any): void {
         const connectedPeers = this.getPeersConnectedTo(sourcePeer);
         for (const peer of connectedPeers) {
             peer.emit(event, data);
@@ -89,7 +88,7 @@ export class SocketWebRTCRoom extends EventEmitter {
                 console.log("Disconnect", socket.id);
                 this.emit('disconnect', peer);
                 this.peers.delete(peer.id);
-                this.notifyPeersOf(SocketEvents.PeerDisconnected, peer, peer.serialize());
+                this.notifyPeersOf(peer, SocketEvents.PeerDisconnected, peer.serialize());
 
             });
 
@@ -145,5 +144,15 @@ export class SocketWebRTCRoom extends EventEmitter {
         const role1Connections = this.rolesConnections.get(role1);
         if (!role1Connections) return false;
         return role1Connections.has(role2);
+    }
+
+    private sendToPeerOrRole(target: Peer | string, event: string, data?: any): void {
+        if (target instanceof Peer) {
+            target.emit(event, data);
+        } else {
+            this.getPeersOfRole(target).forEach((peer: Peer) => {
+                peer.emit(event, data);
+            });
+        }
     }
 }
